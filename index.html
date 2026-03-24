@@ -18,7 +18,7 @@
         font-family: 'Segoe UI', sans-serif;
       }
 
-      /* ÜST BAR - ORIJINAL */
+      /* ÜST BAR */
       .header-bar {
         background: #8B4513; 
         height: 80px;
@@ -37,13 +37,12 @@
       }
       .nav-buttons button:hover { background: #fff; transform: scale(1.05); }
 
-      /* YAZI ALANI - KONUMU HIÇ DEĞİŞMEDİ */
+      /* YAZI ALANI - ORIJINAL KONUM */
       .welcome-area {
         position: absolute;
         top: 42%; 
         left: 9%;
         width: 450px;
-        max-width: 40vw; /* Mobilde taşmayı önlemek için eklendi */
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -64,27 +63,27 @@
         opacity: 0.8;
         animation: suzul 4s ease-in-out infinite;
       }
-      .star-small-1 { top: -30px; right: 20px; font-size: 25px; color: #FFD700; }
-      .star-small-2 { bottom: -50px; left: -20px; font-size: 25px; color: #FFD700; }
-      .music-big { top: 60%; right: 40px; font-size: 50px; color: #8B4513; }
-      .music-small-1 { bottom: -10px; left: -60px; font-size: 30px; color: #8B4513; }
+      .star-small-1 { top: -30px; right: 20px; font-size: 25px; color: #FFD700; animation-delay: 1s; }
+      .star-small-2 { bottom: -50px; left: -20px; font-size: 25px; color: #FFD700; animation-delay: 2s; }
+      .music-big { top: 60%; right: 40px; font-size: 50px; color: #8B4513; animation-delay: 0.5s; }
+      .music-small-1 { bottom: -10px; left: -60px; font-size: 30px; color: #8B4513; animation-delay: 2.5s; }
 
       @keyframes suzul {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-12px); }
       }
 
-      /* VİTRİN VE ÇERÇEVE - KONUMU HIÇ DEĞİŞMEDİ */
+      /* VİTRİN VE ÇERÇEVE */
       .vitrin-konteynir {
         position: absolute; top: 55%; right: 4%; 
         transform: translateY(-50%);
         display: flex; align-items: center; gap: 10px;
       }
       .ok-tekli { font-size: 70px; color: #333; cursor: pointer; pointer-events: auto; transition: 0.3s; user-select: none;}
+      .ok-tekli:hover { color: #8B4513; transform: scale(1.25); }
       
       .nota-cerceve-main {
         width: 480px; height: 400px;
-        max-width: 45vw; /* Mobilde taşmayı önlemek için eklendi */
         position: relative;
         display: flex; justify-content: center; align-items: center;
       }
@@ -105,21 +104,19 @@
       } 
 
       @keyframes tiklaBeni {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
+        0% { transform: scale(1); box-shadow: 0 0 0px rgba(139, 69, 19, 0); }
+        50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(139, 69, 19, 0.4); }
+        100% { transform: scale(1); box-shadow: 0 0 0px rgba(139, 69, 19, 0); }
       }
 
-      /* MOBİLDE SADECE BOYUTLARI KÜÇÜLTEN AYAR (KONUM DEĞİŞMEZ) */
+      /* SADECE MOBİL İÇİN ÖLÇEKLENDİRME - TASARIM DEĞERLERİNE DOKUNMAZ */
       @media (max-width: 1024px) {
-        .header-bar { padding: 0 10px; height: 60px; }
-        .nav-buttons button { padding: 5px 10px; font-size: 12px; }
-        .line-1 { font-size: 20px; }
-        .line-2, .line-3 { font-size: 24px; }
-        .welcome-area { width: 40%; }
-        .nota-cerceve-main { width: 300px; height: 250px; }
-        .label-box { font-size: 14px; padding: 5px 20px; }
-        .ok-tekli { font-size: 30px; }
-        .dekoratif-nota { font-size: 30px; }
+        #ui-overlay { 
+          transform: scale(0.6); 
+          transform-origin: center; 
+          width: 166%; height: 166%; /* Küçülme sonrası ekranı kaplaması için */
+          left: -33%; top: -33%;
+        }
       }
 
       #custom-fs-button {
@@ -128,7 +125,7 @@
         border: 2px solid #D2B48C; border-radius: 10px;
         cursor: pointer; pointer-events: auto;
         display: flex; align-items: center; justify-content: center;
-        color: white; font-size: 24px; z-index: 1000;
+        color: white; font-size: 24px; z-index: 1000; transition: 0.3s;
       }
     </style>
   </head>
@@ -136,7 +133,7 @@
 
     <div id="ui-overlay">
       <div class="header-bar">
-        <div style="color:white; font-weight:bold; font-size:24px;">Mirasımızın Ezgileri 360</div>
+        <div class="logo" style="color:white; font-weight:bold; font-size:24px;">Mirasımızın Ezgileri 360</div>
         <div class="nav-buttons">
           <button onclick="window.location.reload()">Ana Sayfa 🏠</button>
           <button>Hakkında</button>
@@ -144,7 +141,7 @@
         </div>
       </div>
 
-      <div id="custom-fs-button">⛶</div>
+      <div id="custom-fs-button" title="Tam Ekran">⛶</div>
 
       <div class="welcome-area">
         <span class="decor-icon star-small-1">✨</span>
@@ -183,7 +180,7 @@
 
       <a-sky color="#FAF5EE"></a-sky>
 
-      <a-entity id="main-model" position="2.5 0.3 -4">
+      <a-entity id="main-model-wrapper" position="2.5 0.3 -4">
         <a-entity 
           class="clickable"
           gltf-model="#kemence-model" 
@@ -208,12 +205,6 @@
         if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); fsBtn.innerText = "⌏"; }
         else { document.exitFullscreen(); fsBtn.innerText = "⛶"; }
       });
-
-      // Mobilde modelin ekrana sığması için sadece ölçeği biraz küçülttük (Konum sabit)
-      if (window.innerWidth <= 1024) {
-          document.querySelector('.clickable').setAttribute('scale', '4.5 4.5 4.5');
-          document.getElementById('main-model').setAttribute('position', '1.5 0.3 -4');
-      }
 
       const clickableModel = document.querySelector('.clickable');
       clickableModel.addEventListener('mouseenter', () => { document.body.style.cursor = 'pointer'; });
