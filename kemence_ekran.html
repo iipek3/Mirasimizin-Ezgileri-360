@@ -34,11 +34,11 @@
       }
       .panel-open { right: 0; }
 
-      /* Bilgi Yazıları (BÜYÜTÜLDÜ) */
+      /* Bilgi Yazıları */
       #info-title { font-size: 32px; color: #8B4513; margin-bottom: 15px; font-weight: bold; }
       #info-desc { font-size: 19px; line-height: 1.6; color: #444; }
 
-      /* Oyna Butonu (ANİMASYONLU) */
+      /* Oyna Butonu */
       .game-redirect-btn {
         background: #D2B48C; color: #8B4513; border: 2px solid #8B4513; 
         padding: 18px; border-radius: 30px; font-weight: bold; cursor: pointer; 
@@ -94,6 +94,21 @@
         position: absolute; bottom: 0; width: 100%; background: rgba(139, 69, 19, 0.9);
         color: white; font-size: 11px; text-align: center; padding: 3px 0; font-weight: bold;
       }
+
+      /* --- MOBİL SIĞDIRMA AYARI (TASARIMI BOZMAZ, SADECE ÖLÇEKLER) --- */
+      @media (max-width: 1024px) {
+        .header-bar { height: 60px; padding: 0 20px; }
+        .header-bar div { font-size: 18px !important; }
+        .nav-buttons button { padding: 5px 15px; font-size: 12px; }
+        
+        #scene-container { left: 5%; right: 5%; top: 100px; bottom: 120px; }
+        
+        .info-panel { width: 85%; padding: 25px; border-left-width: 5px; }
+        #info-title { font-size: 24px; }
+        #info-desc { font-size: 16px; }
+        
+        .toggle-info-btn { padding: 10px 30px; font-size: 16px; bottom: 30px; }
+      }
     </style>
   </head>
   <body>
@@ -102,7 +117,7 @@
       <div class="header-bar">
         <div style="color:white; font-weight:bold; font-size:24px;">Mirasımızın Ezgileri 360</div>
         <div class="nav-buttons">
-          <button onclick="window.location.href='index.html'">Ana Sayfa 🏠</button>
+          <button onclick="window.location.href='Ana-sayfa.html'">Ana Sayfa 🏠</button>
           <button onclick="window.location.href='hakkinda.html'">Hakkında</button>
           <button onclick="window.location.href='kesfet.html'">Keşfet</button>
         </div>
@@ -111,13 +126,13 @@
       <div id="side-panel" class="info-panel">
         <div class="info-content">
           <h2 id="info-title">Klasik Kemençe</h2>
-          <p id="info-desc">Bu çalgı tıpkı bir armuda benziyor! Gövdesi ıhlamur, dut veya erik ağacından yapılır. Üç teli vardır. Tırnaklar ile çalınması en büyük özelliğidir!</p>
+          <p id="info-desc">Bu çalgı tıpkı bir armuda benyişiyor! Gövdesi ıhlamur, dut veya erik ağacından yapılır. Üç teli vardır. Tırnaklar ile çalınması en büyük özelliğidir!</p>
         </div>
         
         <button class="game-redirect-btn" onclick="window.location.href='kemence_muzik_secim.html'">OYNA 🎮</button>
 
         <div class="tutorial-box">
-          <div class="tutorial-title">💡 Yandaki estrümanı nasıl inceleriz?</div>
+          <div class="tutorial-title">💡 Yandaki enstrümanı nasıl inceleriz?</div>
           <div class="tutorial-item"><span>🖱️ <b>Döndür:</b> Sol tık / Tek parmak</span></div>
           <div class="tutorial-item"><span>🔍 <b>Yakınlaş:</b> Tekerlek / İki parmakla büyüt-küçült</span></div>
           <div class="tutorial-item"><span>🖐️ <b>Kaydır:</b> Sağ tık / Çift parmak </span></div>
