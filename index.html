@@ -18,7 +18,7 @@
         font-family: 'Segoe UI', sans-serif;
       }
 
-      /* ÜST BAR */
+      /* ÜST BAR - MOBİL UYUMLU */
       .header-bar {
         background: #8B4513; 
         height: 80px;
@@ -37,7 +37,7 @@
       }
       .nav-buttons button:hover { background: #fff; transform: scale(1.05); }
 
-      /* YAZI ALANI - KONUM KORUNDU */
+      /* YAZI ALANI */
       .welcome-area {
         position: absolute;
         top: 42%; 
@@ -91,7 +91,7 @@
       .n1 { top: 10px; left: 15px; transform: rotate(-15deg); color: #5D2E0A; } 
       .n2 { top: 10px; right: 15px; transform: rotate(10deg); }         
       .n3 { bottom: 65px; left: 15px; transform: rotate(15deg); }                 
-      .n4 { bottom: 65px; right: 25px; transform: rotate(-10deg); }                
+      .n4 { bottom: 65px; right: 25px; transform: rotate(-10deg); }                 
 
       .label-box {
         position: absolute; bottom: 15px;
@@ -99,18 +99,16 @@
         padding: 8px 50px; border-radius: 30px; border: 2px solid #8B4513;
         font-weight: bold; font-size: 22px; cursor: pointer; pointer-events: auto; transition: 0.3s;
         animation: tiklaBeni 2s ease-in-out infinite;
-        white-space: nowrap; /* Yazının taşmasını önler */
-        } 
+        white-space: nowrap;
+      } 
 
-/* Büyüyüp küçülme (Kalp Atışı) Efekti */
-        @keyframes tiklaBeni {
+      @keyframes tiklaBeni {
         0% { transform: scale(1); box-shadow: 0 0 0px rgba(139, 69, 19, 0); }
         50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(139, 69, 19, 0.4); }
         100% { transform: scale(1); box-shadow: 0 0 0px rgba(139, 69, 19, 0); }
-        }
+      }
 
-/* Mouse ile üzerine gelindiğinde animasyonu durdurup biraz daha büyütebiliriz */
-        .label-box:hover {
+      .label-box:hover {
         animation-play-state: paused;
         transform: scale(1.15) !important;
         background: linear-gradient(#fff, #D2B48C);
@@ -123,6 +121,30 @@
         cursor: pointer; pointer-events: auto;
         display: flex; align-items: center; justify-content: center;
         color: white; font-size: 24px; z-index: 1000; transition: 0.3s;
+      }
+
+      /* --- SADECE SIGMA AYARLARI (RESPONSIVE) --- */
+      @media (max-width: 1024px) {
+        .header-bar { padding: 0 20px; height: 60px; }
+        .nav-buttons button { padding: 8px 15px; font-size: 14px; }
+        .logo { font-size: 18px !important; }
+        
+        .welcome-area { top: 15%; left: 5%; width: 90%; }
+        .line-1 { font-size: 28px; }
+        .line-2, .line-3 { font-size: 32px; }
+
+        .vitrin-konteynir { bottom: 10%; top: auto; right: 5%; left: 5%; transform: none; width: 90%; justify-content: center; }
+        .nota-cerceve-main { width: 100%; max-width: 350px; height: 280px; }
+        .ok-tekli { font-size: 40px; }
+        .label-box { font-size: 18px; padding: 8px 30px; }
+        .dekoratif-nota { font-size: 35px; }
+      }
+
+      @media (max-width: 480px) {
+        .line-1 { font-size: 22px; }
+        .line-2, .line-3 { font-size: 26px; }
+        .nav-buttons button { padding: 5px 10px; font-size: 12px; }
+        .header-bar { height: 50px; }
       }
     </style>
   </head>
@@ -178,7 +200,7 @@
 
       <a-sky color="#FAF5EE"></a-sky>
 
-      <a-entity position="2.5 0.3 -4">
+      <a-entity id="model-container" position="2.5 0.3 -4">
         <a-entity 
           class="clickable"
           gltf-model="#kemence-model" 
@@ -206,14 +228,14 @@
         else { document.exitFullscreen(); fsBtn.innerText = "⛶"; }
       });
 
-      // MODELİN ÜZERİNE GELİNCE FARE İMLECİNİ EL İŞARETİ YAPMA
+      // Mobilde modelin ekrana sığması için konum ayarı
+      if (window.innerWidth <= 1024) {
+        document.getElementById('model-container').setAttribute('position', '0 0.5 -5');
+      }
+
       const clickableModel = document.querySelector('.clickable');
-      clickableModel.addEventListener('mouseenter', () => {
-        document.body.style.cursor = 'pointer';
-      });
-      clickableModel.addEventListener('mouseleave', () => {
-        document.body.style.cursor = 'default';
-      });
+      clickableModel.addEventListener('mouseenter', () => { document.body.style.cursor = 'pointer'; });
+      clickableModel.addEventListener('mouseleave', () => { document.body.style.cursor = 'default'; });
     </script>
   </body>
 </html>
