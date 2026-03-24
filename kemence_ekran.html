@@ -95,19 +95,16 @@
         color: white; font-size: 11px; text-align: center; padding: 3px 0; font-weight: bold;
       }
 
-      /* --- MOBİL SIĞDIRMA AYARI (TASARIMI BOZMAZ, SADECE ÖLÇEKLER) --- */
-      @media (max-width: 1024px) {
-        .header-bar { height: 60px; padding: 0 20px; }
-        .header-bar div { font-size: 18px !important; }
-        .nav-buttons button { padding: 5px 15px; font-size: 12px; }
-        
-        #scene-container { left: 5%; right: 5%; top: 100px; bottom: 120px; }
-        
-        .info-panel { width: 85%; padding: 25px; border-left-width: 5px; }
+      /* --- TEK DEĞİŞİKLİK: DİĞER CİHAZLAR İÇİN UYUM --- */
+      @media (max-width: 768px) {
+        #scene-container { left: 5%; right: 5%; top: 100px; bottom: 120px; border-width: 4px; }
+        .header-bar { padding: 0 15px; height: 60px; }
+        .header-bar div { font-size: 16px !important; }
+        .nav-buttons button { padding: 5px 10px; font-size: 12px; }
+        .info-panel { width: 85%; padding: 20px; }
         #info-title { font-size: 24px; }
         #info-desc { font-size: 16px; }
-        
-        .toggle-info-btn { padding: 10px 30px; font-size: 16px; bottom: 30px; }
+        .toggle-info-btn { padding: 10px 30px; font-size: 16px; bottom: 20px; }
       }
     </style>
   </head>
@@ -126,7 +123,7 @@
       <div id="side-panel" class="info-panel">
         <div class="info-content">
           <h2 id="info-title">Klasik Kemençe</h2>
-          <p id="info-desc">Bu çalgı tıpkı bir armuda benyişiyor! Gövdesi ıhlamur, dut veya erik ağacından yapılır. Üç teli vardır. Tırnaklar ile çalınması en büyük özelliğidir!</p>
+          <p id="info-desc">Bu çalgı tıpkı bir armuda benziyor! Gövdesi ıhlamur, dut veya erik ağacından yapılır. Üç teli vardır. Tırnaklar ile çalınması en büyük özelliğidir!</p>
         </div>
         
         <button class="game-redirect-btn" onclick="window.location.href='kemence_muzik_secim.html'">OYNA 🎮</button>
@@ -134,9 +131,8 @@
         <div class="tutorial-box">
           <div class="tutorial-title">💡 Yandaki enstrümanı nasıl inceleriz?</div>
           <div class="tutorial-item"><span>🖱️ <b>Döndür:</b> Sol tık / Tek parmak</span></div>
-          <div class="tutorial-item"><span>🔍 <b>Yakınlaş:</b> Tekerlek / İki parmakla büyüt-küçült</span></div>
+          <div class="tutorial-item"><span>🔍 <b>Yakınlaş:</b> Tekerlek / İki parmak</span></div>
           <div class="tutorial-item"><span>🖐️ <b>Kaydır:</b> Sağ tık / Çift parmak </span></div>
-          <div class="tutorial-item"><span> <b> (sıfırlamak için yenileme butonuna bas)</b> </span></div>
         </div>
       </div>
 
