@@ -18,7 +18,7 @@
         font-family: 'Segoe UI', sans-serif;
       }
 
-      /* ÜST BAR - MOBİL UYUMLU */
+      /* ÜST BAR */
       .header-bar {
         background: #8B4513; 
         height: 80px;
@@ -37,7 +37,7 @@
       }
       .nav-buttons button:hover { background: #fff; transform: scale(1.05); }
 
-      /* YAZI ALANI */
+      /* YAZI ALANI - ORIJINAL KONUM */
       .welcome-area {
         position: absolute;
         top: 42%; 
@@ -63,7 +63,6 @@
         opacity: 0.8;
         animation: suzul 4s ease-in-out infinite;
       }
-
       .star-small-1 { top: -30px; right: 20px; font-size: 25px; color: #FFD700; animation-delay: 1s; }
       .star-small-2 { bottom: -50px; left: -20px; font-size: 25px; color: #FFD700; animation-delay: 2s; }
       .music-big { top: 60%; right: 40px; font-size: 50px; color: #8B4513; animation-delay: 0.5s; }
@@ -74,7 +73,7 @@
         50% { transform: translateY(-12px); }
       }
 
-      /* VİTRİN VE ÇERÇEVE */
+      /* VİTRİN VE ÇERÇEVE - ORIJINAL BOYUTLAR */
       .vitrin-konteynir {
         position: absolute; top: 55%; right: 4%; 
         transform: translateY(-50%);
@@ -82,8 +81,10 @@
       }
       .ok-tekli { font-size: 70px; color: #333; cursor: pointer; pointer-events: auto; transition: 0.3s; user-select: none;}
       .ok-tekli:hover { color: #8B4513; transform: scale(1.25); }
+      
       .nota-cerceve-main {
-        width: 480px; height: 400px; position: relative;
+        width: 480px; height: 400px; /* Bilgisayarda senin orijinal boyutun */
+        position: relative;
         display: flex; justify-content: center; align-items: center;
       }
       .nota-tasarim { position: absolute; inset: 0; border: 4px double #333; border-radius: 15px; background: rgba(255, 255, 255, 0.05); }
@@ -108,10 +109,21 @@
         100% { transform: scale(1); box-shadow: 0 0 0px rgba(139, 69, 19, 0); }
       }
 
-      .label-box:hover {
-        animation-play-state: paused;
-        transform: scale(1.15) !important;
-        background: linear-gradient(#fff, #D2B48C);
+      /* --- SADECE MOBİL İÇİN SIĞDIRMA AYARI --- */
+      /* Bilgisayarda bu kısım hiç çalışmaz, tasarımı bozmaz */
+      @media (max-width: 1024px) {
+        .welcome-area { width: 90vw; top: 15%; left: 5%; }
+        .line-1 { font-size: 32px; }
+        .line-2, .line-3 { font-size: 36px; }
+        
+        .vitrin-konteynir { 
+            top: auto; bottom: 5%; right: auto; left: 50%; 
+            transform: translateX(-50%); width: 95vw; justify-content: center;
+        }
+        .nota-cerceve-main { width: 320px; height: 260px; } /* Mobilde sığması için mecburi küçülme */
+        .ok-tekli { font-size: 50px; }
+        .label-box { font-size: 18px; padding: 6px 30px; }
+        .dekoratif-nota { font-size: 35px; }
       }
 
       #custom-fs-button {
@@ -121,30 +133,6 @@
         cursor: pointer; pointer-events: auto;
         display: flex; align-items: center; justify-content: center;
         color: white; font-size: 24px; z-index: 1000; transition: 0.3s;
-      }
-
-      /* --- SADECE SIGMA AYARLARI (RESPONSIVE) --- */
-      @media (max-width: 1024px) {
-        .header-bar { padding: 0 20px; height: 60px; }
-        .nav-buttons button { padding: 8px 15px; font-size: 14px; }
-        .logo { font-size: 18px !important; }
-        
-        .welcome-area { top: 15%; left: 5%; width: 90%; }
-        .line-1 { font-size: 28px; }
-        .line-2, .line-3 { font-size: 32px; }
-
-        .vitrin-konteynir { bottom: 10%; top: auto; right: 5%; left: 5%; transform: none; width: 90%; justify-content: center; }
-        .nota-cerceve-main { width: 100%; max-width: 350px; height: 280px; }
-        .ok-tekli { font-size: 40px; }
-        .label-box { font-size: 18px; padding: 8px 30px; }
-        .dekoratif-nota { font-size: 35px; }
-      }
-
-      @media (max-width: 480px) {
-        .line-1 { font-size: 22px; }
-        .line-2, .line-3 { font-size: 26px; }
-        .nav-buttons button { padding: 5px 10px; font-size: 12px; }
-        .header-bar { height: 50px; }
       }
     </style>
   </head>
@@ -167,7 +155,6 @@
         <span class="decor-icon star-small-2">✨</span>
         <span class="decor-icon music-big">🎵</span>
         <span class="decor-icon music-small-1">🎵</span>
-
         <h1 class="line-1">Türk Müzik Aletlerinin</h1>
         <h1 class="line-2">sihirli dünyasına</h1>
         <h1 class="line-3">hoşgeldin! 💖</h1>
@@ -193,14 +180,14 @@
       vr-mode-ui="enabled: false" 
       style="width: 100%; height: 100vh;" 
       cursor="rayOrigin: mouse"
-      raycaster="objects: .clickable"> 
+      raycaster="objects: .clickable; far: 50; interval: 200">
       <a-assets>
         <a-asset-item id="kemence-model" src="models/kemence1.glb"></a-asset-item>
       </a-assets>
 
       <a-sky color="#FAF5EE"></a-sky>
 
-      <a-entity id="model-container" position="2.5 0.3 -4">
+      <a-entity id="main-model-wrapper" position="2.5 0.3 -4">
         <a-entity 
           class="clickable"
           gltf-model="#kemence-model" 
@@ -216,9 +203,7 @@
       <a-light type="ambient" color="#FFF5E6" intensity="1.2"></a-light>
       <a-light type="directional" position="-2 4 2" intensity="0.8"></a-light>
       
-      <a-camera position="0 1.6 0" look-controls-enabled="false">
-        <a-cursor fuse="false" raycaster="objects: .clickable" visible="false"></a-cursor>
-      </a-camera>
+      <a-camera position="0 1.6 0" look-controls-enabled="false"></a-camera>
     </a-scene>
 
     <script>
@@ -228,9 +213,9 @@
         else { document.exitFullscreen(); fsBtn.innerText = "⛶"; }
       });
 
-      // Mobilde modelin ekrana sığması için konum ayarı
+      // Mobilde modelin konumunu ve tıklama alanını düzeltir (PC'ye dokunmaz)
       if (window.innerWidth <= 1024) {
-        document.getElementById('model-container').setAttribute('position', '0 0.5 -5');
+          document.getElementById('main-model-wrapper').setAttribute('position', '0 0.2 -5.5');
       }
 
       const clickableModel = document.querySelector('.clickable');
