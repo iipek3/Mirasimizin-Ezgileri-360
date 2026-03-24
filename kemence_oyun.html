@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kemençe Hero | Final</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #020617; font-family: 'Segoe UI', sans-serif; }
+        
+        /* UI Katmanları */
+        #menu-overlay { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: white; }
+        #ui-layer { position: absolute; top: 20px; left: 20px; color: white; pointer-events: none; z-index: 100; display: none; }
+        
+        /* Butonlar */
+        .btn { padding: 15px 40px; font-size: 20px; font-weight: bold; color: white; background: #38bdf8; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+        .btn:hover { transform: scale(1.1); background: #0ea5e9; box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); }
+        
+        #back-btn { position: absolute; top: 20px; right: 20px; padding: 10px 20px; font-size: 14px; background: #f43f5e; display: none; z-index: 1000; color: white; border: none; border-radius: 8px; cursor: pointer;}
+        
+        .stat-box { background: rgba(15, 23, 42, 0.9); padding: 10px 20px; border-radius: 8px; border: 1px solid #38bdf8; min-width: 120px; }
+        .label { font-size: 10px; color: #38bdf8; text-transform: uppercase; }
+        .value { font-size: 24px; font-weight: bold; }
+        
+        #feedback-panel { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); color: #f43f5e; font-size: 50px; font-weight: bold; display: none; z-index: 100; text-shadow: 0 0 15px rgba(244,63,94,0.7);}
+        
+        /* Tebrikler Paneli */
+        #finish-panel { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.98); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; color: white; text-align: center; }
+        
+        h1 { margin-bottom: 30px; font-size: 42px; color: #38bdf8; text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); text-align: center; }
+    </style>
+</head>
+<body>
+
+<div id="menu-overlay">
+    <h1>RİTME HAZIR MISIN?</h1>
+    <button class="btn" onclick="startGame()">Oyuna Başla</button>
+</div>
+
+<div id="finish-panel">
+    <h1 style="color: #10b981;">TEBRİKLER! 🎻</h1>
+    <p style="font-size: 24px;">Harika bir performans sergiledin!</p>
+    <div class="stat-box" style="margin: 20px 0;">
+        <div class="label">Toplam Puan</div>
+        <div id="final-score" class="value">0</div>
+    </div>
+    <button class="btn" onclick="goToSelection()">ANA SAYFAYA DÖN</button>
+</div>
+
+<button id="back-btn" onclick="goToSelection()">GERİ DÖN</button>
+
+<audio id="rhythm-music" src="sounds/Erişti Nev.mp3" preload="auto"></audio>
+
+<div id="ui-layer">
+    <div class="stat-box">
+        <div class="label">Puan</div>
+        <div id="score" class="value">0</div>
+    </div>
+</div>
+
+<div id="feedback-panel">HARİKA!</div>
+
+<a-scene embedded vr-mode-ui="enabled:false" renderer="antialias:true; colorManagement:true; sortObjects: true; exposure: 1.1;">
+    <a-assets>
+        <a-asset-item id="kemence-model" src="models/kemence1.glb"></a-asset-item>
+        <a-asset-item id="yay-model" src="models/yay.glb"></a-asset-item>
+    </a-assets>
+
+    <a-sky color="#ADD8E6"></a-sky>
+    <a-light type="ambient" intensity="1.2"></a-light>
+    <a-light type="directional" position="2 4 3" intensity="1.0" target="#kemence"></a-light>
+    <a-camera position="0 1.5 4" look-controls="enabled:false"></a-camera>
+
+    <a-entity id="rhythm-panel" position="-2.5 1 -2" rotation="0 20 0" renderOrder="1">
+        <a-box position="0 0 -0.05" width="2" height="5" depth="0.01" color="#1e293b" opacity="0.5"></a-box>
+        <a-plane id="hit-line" position="0 -0.62 0.01" width="2" height="0.6" color="#38bdf8" material="emissive: #38bdf8; emissiveIntensity: 2; opacity: 0.8"></a-plane>
+    </a-entity>
+    
+    <a-entity id="kemence" gltf-model="#kemence-model" position="0 -1.3 -2.5" scale="18 18 18" rotation="-15 0 0"></a-entity>
+
+    <a-entity id="yay-pivot" position="0 0.65 -1.3">
+        <a-entity id="yay" gltf-model="#yay-model" scale="4 4 4" position="1.5 0.1 -0.2" rotation="200 310 180"></a-entity>
+    </a-entity>
+</a-scene>
+
+<script>
+const yay = document.querySelector('#yay');
+const yayPivot = document.querySelector('#yay-pivot');
+const rhythmPanel = document.querySelector('#rhythm-panel');
+const scoreEl = document.querySelector('#score');
+const feedbackEl = document.querySelector('#feedback-panel');
+const musicAudio = document.querySelector('#rhythm-music');
+const menuOverlay = document.querySelector('#menu-overlay');
+const finishPanel = document.querySelector('#finish-panel');
+const uiLayer = document.querySelector('#ui-layer');
+const backBtn = document.querySelector('#back-btn');
+
+let gameActive = false;
+const idlePos = {x: 1.5, y: 0.1, z: -0.2}, idleRot = {x: 200, y: 310, z: 180}, playRot = {x: 260, y: 350, z: 90};
+let isDragging = false, currentX = 1.5, targetX = 1.5, currentAngle = 0, targetAngle = 0;
+const limitX = 1.8, inputSmooth = 0.25, railAngles = [-60, 0, 40], angleLerp = 0.08;
+
+let score = 0, noteSpeed = 2.2, spawnedNotes = [];
+let lastNoteTime = 0;
+let nextSpawnDelay = 0.4; 
+
+// Yoğun Ritim Patternleri
+const patterns = [
+    { rail: 1, rot: 90, targetYaw: 0, moveDir: "left", delayAfter: 0.45 },    
+    { rail: 1, rot: -90, targetYaw: 0, moveDir: "right", delayAfter: 0.45 },  
+    { rail: 0, rot: 135, targetYaw: -60, moveDir: "left", delayAfter: 0.9 },
+    { rail: 2, rot: -45, targetYaw: 40, moveDir: "right", delayAfter: 0.45 },  
+    { rail: 0, rot: -135, targetYaw: -60, moveDir: "right", delayAfter: 0.45 },
+    { rail: 2, rot: 45, targetYaw: 40, moveDir: "left", delayAfter: 0.9 }    
+];
+let currentPatternIdx = 0;
+
+function startGame() {
+    menuOverlay.style.display = 'none';
+    finishPanel.style.display = 'none';
+    uiLayer.style.display = 'block';
+    backBtn.style.display = 'block';
+    score = 0;
+    scoreEl.innerText = "0";
+    gameActive = true;
+    musicAudio.currentTime = 0;
+    musicAudio.play();
+}
+
+// Müzik bittiğinde oyunu sonlandır
+musicAudio.onended = function() {
+    endGame();
+};
+
+function endGame() {
+    gameActive = false;
+    uiLayer.style.display = 'none';
+    backBtn.style.display = 'none';
+    document.getElementById('final-score').innerText = score;
+    finishPanel.style.display = 'flex';
+    
+    // Ekranda kalan okları temizle
+    spawnedNotes.forEach(note => note.el.remove());
+    spawnedNotes = [];
+}
+
+function goToSelection() {
+    window.location.href = "kemence_muzik_secim.html";
+}
+
+function spawnNoteLogic() {
+    if (!gameActive) return;
+    let currentTime = musicAudio.currentTime;
+    
+    // Şarkının bitmesine 3 saniye kala ok üretmeyi durdur (havadakiler yetişsin diye)
+    if (musicAudio.duration - currentTime < 3) return;
+
+    if (!musicAudio.paused && currentTime > lastNoteTime + nextSpawnDelay) {
+        const p = patterns[currentPatternIdx];
+        spawnNote(p);
+        lastNoteTime = currentTime;
+        nextSpawnDelay = p.delayAfter;
+        currentPatternIdx = (currentPatternIdx + 1) % patterns.length;
+    }
+}
+
+function spawnNote(p) {
+    const colors = ['#f43f5e', '#10b981', '#3b82f6'];
+    let noteNode = document.createElement('a-cone'); 
+    noteNode.setAttribute('position', `0 2.5 0.3`);
+    noteNode.setAttribute('radius-bottom', '0.15');
+    noteNode.setAttribute('radius-top', '0');
+    noteNode.setAttribute('height', '0.45');
+    noteNode.setAttribute('rotation', `0 0 ${p.rot}`);
+    noteNode.setAttribute('color', colors[p.rail]);
+    
+    noteNode.setAttribute('material', { shader: 'flat', depthTest: false }); 
+    noteNode.setAttribute('renderOrder', '10'); 
+
+    noteNode.setAttribute('animation', {
+        property: 'position', to: `0 -2.5 0.3`, dur: noteSpeed * 1000, easing: 'linear'
+    });
+
+    rhythmPanel.appendChild(noteNode);
+    spawnedNotes.push({el: noteNode, rail: p.rail, targetYaw: p.targetYaw, moveDir: p.moveDir, timeSpawned: musicAudio.currentTime});
+}
+
+function rhythmUpdate() {
+    if (!gameActive && spawnedNotes.length === 0) return;
+    spawnNoteLogic();
+    
+    spawnedNotes.forEach((note, index) => {
+        let elapsed = musicAudio.currentTime - note.timeSpawned;
+        let hitMoment = noteSpeed * 0.86; 
+
+        if (isDragging && Math.abs(elapsed - hitMoment) < 0.40) {
+            let angleDiff = Math.abs(currentAngle - note.targetYaw);
+            let movingLeft = targetX < currentX - 0.01;
+            let movingRight = targetX > currentX + 0.01;
+
+            let isMovingCorrect = false;
+            if (note.moveDir === "left" && movingLeft) isMovingCorrect = true;
+            if (note.moveDir === "right" && movingRight) isMovingCorrect = true;
+
+            if (angleDiff < 25 && isMovingCorrect) {
+                score += 10;
+                scoreEl.innerText = score;
+                showFeedback("HARİKA!");
+                note.el.remove();
+                spawnedNotes.splice(index, 1);
+            }
+        }
+        if (elapsed > noteSpeed) {
+            note.el.remove();
+            spawnedNotes.splice(index, 1);
+        }
+    });
+}
+
+function handleInput(clientX, clientY) {
+    if (!isDragging || !gameActive) return;
+    let prevTargetX = targetX;
+    let rawX = (clientX / window.innerWidth) * 7 - 3.5;
+    let filteredX = targetX + (rawX - targetX) * inputSmooth; 
+    targetX = Math.max(-limitX, Math.min(limitX, filteredX));
+
+    if (targetX < prevTargetX - 0.005) {
+        let normY = (clientY / window.innerHeight) - 0.5;
+        if (normY < -0.18) targetAngle = railAngles[0];      
+        else if (normY > 0.18) targetAngle = railAngles[2]; 
+        else targetAngle = railAngles[1];
+    }
+}
+
+function startAction() {
+    if (!gameActive) return;
+    isDragging = true;
+    yay.setAttribute('rotation', playRot);
+}
+
+function stopAction() {
+    isDragging = false;
+    currentX = idlePos.x;
+    targetX = idlePos.x;
+    currentAngle = 0;
+    targetAngle = 0;
+
+    yay.setAttribute('position', {x: idlePos.x, y: idlePos.y, z: idlePos.z});
+    yay.setAttribute('rotation', idleRot);
+    yayPivot.setAttribute('rotation', '0 0 0');
+
+    yay.setAttribute('animation', { 
+        property: 'position', to: `${idlePos.x} ${idlePos.y} ${idlePos.z}`, dur: 200 
+    });
+}
+
+function showFeedback(text) {
+    feedbackEl.innerText = text;
+    feedbackEl.style.display = "block";
+    setTimeout(() => { feedbackEl.style.display = "none"; }, 400);
+}
+
+window.addEventListener('mousedown', startAction);
+window.addEventListener('mouseup', stopAction);
+window.addEventListener('mousemove', e => handleInput(e.clientX, e.clientY));
+
+// TOUCH EVENTS (Mobil destek)
+window.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    startAction();
+    handleInput(touch.clientX, touch.clientY);
+}, { passive: false });
+
+window.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    handleInput(touch.clientX, touch.clientY);
+    e.preventDefault(); // kaydırmayı engeller
+}, { passive: false });
+
+window.addEventListener('touchend', () => {
+    stopAction();
+});
+
+function update() {
+    rhythmUpdate();
+    if (isDragging && gameActive) {
+        currentX += (targetX - currentX) * 0.25;
+        if (currentX >= limitX) currentX = limitX;
+        if (currentX <= -limitX) currentX = -limitX;
+        yay.setAttribute('position', {x: currentX, y: 0, z: 0});
+        currentAngle += (targetAngle - currentAngle) * angleLerp; 
+        yayPivot.setAttribute('rotation', `0 0 ${currentAngle}`);
+    }
+    requestAnimationFrame(update);
+}
+update();
+</script>
+</body>
+</html>

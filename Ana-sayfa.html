@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mirasımızın Ezgileri 360</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; background-color: #FAF5EE; }
+      .a-fullscreen-button { display: none !important; }
+
+      #ui-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none;
+        z-index: 100;
+        font-family: 'Segoe UI', sans-serif;
+      }
+
+      /* ÜST BAR */
+      .header-bar {
+        background: #8B4513; 
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 50px;
+        border-bottom: 5px solid #D2B48C;
+        pointer-events: auto;
+      }
+
+      .nav-buttons button {
+        background: #EADDCA; border: 2px solid #8B4513; border-radius: 20px;
+        padding: 10px 30px; margin-left: 10px; cursor: pointer;
+        font-weight: bold; font-size: 16px; transition: 0.3s;
+      }
+      .nav-buttons button:hover { background: #fff; transform: scale(1.05); }
+
+      /* YAZI ALANI - KONUM KORUNDU */
+      .welcome-area {
+        position: absolute;
+        top: 42%; 
+        left: 9%;
+        width: 450px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        pointer-events: none;
+      }
+
+      .welcome-area h1 { margin: 0; color: #333; text-align: left; line-height: 1.1; }
+      .line-1 { font-size: 40px; font-weight: 600; }
+      .line-2 { font-size: 44px; font-weight: 600; color: #5D2E0A; }
+      .line-3 { font-size: 44px; font-weight: 600; }
+
+      /* SÜSLEMELER */
+      .decor-icon { 
+        position: absolute; 
+        user-select: none; 
+        pointer-events: none;
+        opacity: 0.8;
+        animation: suzul 4s ease-in-out infinite;
+      }
+
+      .star-small-1 { top: -30px; right: 20px; font-size: 25px; color: #FFD700; animation-delay: 1s; }
+      .star-small-2 { bottom: -50px; left: -20px; font-size: 25px; color: #FFD700; animation-delay: 2s; }
+      .music-big { top: 60%; right: 40px; font-size: 50px; color: #8B4513; animation-delay: 0.5s; }
+      .music-small-1 { bottom: -10px; left: -60px; font-size: 30px; color: #8B4513; animation-delay: 2.5s; }
+
+      @keyframes suzul {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-12px); }
+      }
+
+      /* VİTRİN VE ÇERÇEVE */
+      .vitrin-konteynir {
+        position: absolute; top: 55%; right: 4%; 
+        transform: translateY(-50%);
+        display: flex; align-items: center; gap: 10px;
+      }
+      .ok-tekli { font-size: 70px; color: #333; cursor: pointer; pointer-events: auto; transition: 0.3s; user-select: none;}
+      .ok-tekli:hover { color: #8B4513; transform: scale(1.25); }
+      .nota-cerceve-main {
+        width: 480px; height: 400px; position: relative;
+        display: flex; justify-content: center; align-items: center;
+      }
+      .nota-tasarim { position: absolute; inset: 0; border: 4px double #333; border-radius: 15px; background: rgba(255, 255, 255, 0.05); }
+      .dekoratif-nota { position: absolute; font-size: 55px; color: #222; opacity: 0.85; }
+      .n1 { top: 10px; left: 15px; transform: rotate(-15deg); color: #5D2E0A; } 
+      .n2 { top: 10px; right: 15px; transform: rotate(10deg); }         
+      .n3 { bottom: 65px; left: 15px; transform: rotate(15deg); }                 
+      .n4 { bottom: 65px; right: 25px; transform: rotate(-10deg); }                
+
+      .label-box {
+        position: absolute; bottom: 15px;
+        background: linear-gradient(#D2B48C, #B8936E);
+        padding: 8px 50px; border-radius: 30px; border: 2px solid #8B4513;
+        font-weight: bold; font-size: 22px; cursor: pointer; pointer-events: auto; transition: 0.3s;
+        animation: tiklaBeni 2s ease-in-out infinite;
+        white-space: nowrap; /* Yazının taşmasını önler */
+        } 
+
+/* Büyüyüp küçülme (Kalp Atışı) Efekti */
+        @keyframes tiklaBeni {
+        0% { transform: scale(1); box-shadow: 0 0 0px rgba(139, 69, 19, 0); }
+        50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(139, 69, 19, 0.4); }
+        100% { transform: scale(1); box-shadow: 0 0 0px rgba(139, 69, 19, 0); }
+        }
+
+/* Mouse ile üzerine gelindiğinde animasyonu durdurup biraz daha büyütebiliriz */
+        .label-box:hover {
+        animation-play-state: paused;
+        transform: scale(1.15) !important;
+        background: linear-gradient(#fff, #D2B48C);
+      }
+
+      #custom-fs-button {
+        position: absolute; bottom: 20px; right: 20px;
+        width: 50px; height: 50px; background: #8B4513;
+        border: 2px solid #D2B48C; border-radius: 10px;
+        cursor: pointer; pointer-events: auto;
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 24px; z-index: 1000; transition: 0.3s;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="ui-overlay">
+      <div class="header-bar">
+        <div class="logo" style="color:white; font-weight:bold; font-size:24px;">Mirasımızın Ezgileri 360</div>
+        <div class="nav-buttons">
+          <button onclick="window.location.reload()">Ana Sayfa 🏠</button>
+          <button>Hakkında</button>
+          <button id="kesfet-btn">Keşfet</button>
+        </div>
+      </div>
+
+      <div id="custom-fs-button" title="Tam Ekran">⛶</div>
+
+      <div class="welcome-area">
+        <span class="decor-icon star-small-1">✨</span>
+        <span class="decor-icon star-small-2">✨</span>
+        <span class="decor-icon music-big">🎵</span>
+        <span class="decor-icon music-small-1">🎵</span>
+
+        <h1 class="line-1">Türk Müzik Aletlerinin</h1>
+        <h1 class="line-2">sihirli dünyasına</h1>
+        <h1 class="line-3">hoşgeldin! 💖</h1>
+      </div>
+
+      <div class="vitrin-konteynir">
+        <div class="ok-tekli">《</div>
+        <div class="nota-cerceve-main">
+            <div class="nota-tasarim">
+                <div class="dekoratif-nota n1">♫</div> 
+                <div class="dekoratif-nota n2">♬</div>
+                <div class="dekoratif-nota n3">♪</div>
+                <div class="dekoratif-nota n4">♩</div>
+            </div>
+            <div class="label-box" onclick="window.location.href='kemence_ekran.html'">Klasik Kemençe</div>
+        </div>
+        <div class="ok-tekli">》</div>
+      </div>
+    </div>
+
+    <a-scene 
+      embedded 
+      vr-mode-ui="enabled: false" 
+      style="width: 100%; height: 100vh;" 
+      cursor="rayOrigin: mouse"
+      raycaster="objects: .clickable"> 
+      <a-assets>
+        <a-asset-item id="kemence-model" src="models/kemence1.glb"></a-asset-item>
+      </a-assets>
+
+      <a-sky color="#FAF5EE"></a-sky>
+
+      <a-entity position="2.5 0.3 -4">
+        <a-entity 
+          class="clickable"
+          gltf-model="#kemence-model" 
+          scale="7 7 7"
+          rotation="0 0 -15"
+          onclick="window.location.href='kemence_ekran.html'"
+          animation__rotate="property: rotation; from: 0 0 -15; to: 0 360 -15; loop: true; dur: 8000; easing: linear"
+          animation__float="property: position; from: 0 0 0; to: 0 0.15 0; dir: alternate; loop: true; dur: 2500; easing: easeInOutQuad">
+        </a-entity>
+        <a-ellipse position="0 -1.1 0" rotation="-90 0 0" radius-x="0.3" radius-y="0.15" material="color: #000; opacity: 0.1; transparent: true"></a-ellipse>
+      </a-entity>
+
+      <a-light type="ambient" color="#FFF5E6" intensity="1.2"></a-light>
+      <a-light type="directional" position="-2 4 2" intensity="0.8"></a-light>
+      
+      <a-camera position="0 1.6 0" look-controls-enabled="false">
+        <a-cursor fuse="false" raycaster="objects: .clickable" visible="false"></a-cursor>
+      </a-camera>
+    </a-scene>
+
+    <script>
+      const fsBtn = document.getElementById('custom-fs-button');
+      fsBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); fsBtn.innerText = "⌏"; }
+        else { document.exitFullscreen(); fsBtn.innerText = "⛶"; }
+      });
+
+      // MODELİN ÜZERİNE GELİNCE FARE İMLECİNİ EL İŞARETİ YAPMA
+      const clickableModel = document.querySelector('.clickable');
+      clickableModel.addEventListener('mouseenter', () => {
+        document.body.style.cursor = 'pointer';
+      });
+      clickableModel.addEventListener('mouseleave', () => {
+        document.body.style.cursor = 'default';
+      });
+    </script>
+  </body>
+</html>

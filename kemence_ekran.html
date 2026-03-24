@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mirasımızın Ezgileri 360 | Kemençe & Yay</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; background-color: #FAF5EE; font-family: 'Segoe UI', sans-serif; position: fixed; width: 100%; height: 100%; }
+      #ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+
+      /* Üst Menü */
+      .header-bar {
+        background: #8B4513; height: 80px; display: flex;
+        align-items: center; justify-content: space-between;
+        padding: 0 50px; border-bottom: 5px solid #D2B48C; pointer-events: auto;
+      }
+
+      .nav-buttons button {
+        background: #EADDCA; border: 2px solid #8B4513; border-radius: 20px;
+        padding: 10px 30px; margin-left: 10px; cursor: pointer;
+        font-weight: bold; font-size: 16px; transition: 0.3s; pointer-events: auto;
+      }
+      .nav-buttons button:hover { background: #fff; transform: scale(1.05); }
+
+      /* Bilgi Paneli */
+      .info-panel {
+        position: absolute; right: -450px; top: 80px; bottom: 0;
+        width: 380px; background: rgba(255, 255, 255, 0.98);
+        border-left: 10px solid #8B4513; padding: 40px;
+        transition: 0.5s ease-in-out; pointer-events: auto; z-index: 300;
+        box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+        display: flex; flex-direction: column;
+      }
+      .panel-open { right: 0; }
+
+      /* Bilgi Yazıları (BÜYÜTÜLDÜ) */
+      #info-title { font-size: 32px; color: #8B4513; margin-bottom: 15px; font-weight: bold; }
+      #info-desc { font-size: 19px; line-height: 1.6; color: #444; }
+
+      /* Oyna Butonu (ANİMASYONLU) */
+      .game-redirect-btn {
+        background: #D2B48C; color: #8B4513; border: 2px solid #8B4513; 
+        padding: 18px; border-radius: 30px; font-weight: bold; cursor: pointer; 
+        margin-top: 20px; font-size: 20px; transition: 0.3s; text-align: center;
+        animation: tiklaBeni 2s ease-in-out infinite;
+      }
+      @keyframes tiklaBeni {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      .game-redirect-btn:hover { background: #fff; transform: scale(1.1); animation-play-state: paused; }
+
+      /* Rehber Kutusu */
+      .tutorial-box {
+        margin-top: auto; background: #fdf6e9; border: 2px dashed #D2B48C;
+        border-radius: 15px; padding: 15px; pointer-events: none;
+      }
+      .tutorial-title { font-size: 14px; font-weight: bold; color: #8B4513; margin-bottom: 10px; }
+      .tutorial-item { font-size: 13px; color: #5d2e0a; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+
+      .toggle-info-btn {
+        position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+        background: #8B4513; color: white; border: 4px solid #D2B48C;
+        padding: 15px 40px; border-radius: 40px; font-size: 20px;
+        font-weight: bold; cursor: pointer; pointer-events: auto; z-index: 400;
+      }
+
+      /* Sahne Kontrolleri */
+      .control-btn {
+        position: absolute; background: #8B4513; color: white; 
+        border: 2px solid #D2B48C; border-radius: 50%; cursor: pointer; 
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3); pointer-events: auto; z-index: 200;
+      }
+      .audio-btn { top: 20px; left: 20px; width: 50px; height: 50px; }
+      .reset-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; z-index: 50; }
+
+      #scene-container {
+        position: absolute; top: 130px; bottom: 130px; left: 25%; right: 25%;
+        border: 8px double #8B4513; border-radius: 20px; overflow: hidden; 
+        background: radial-gradient(circle, #ffffff 0%, #e8e8e8 100%);
+      }
+
+      #preview-box {
+        position: absolute; bottom: 15px; left: 15px; width: 110px; height: 110px;
+        background: white; border: 4px solid #8B4513; border-radius: 15px;
+        cursor: pointer !important; pointer-events: auto; z-index: 500; overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s;
+        display: flex; align-items: center; justify-content: center;
+      }
+      #preview-box img { width: 85%; height: 85%; object-fit: contain; }
+      #preview-label {
+        position: absolute; bottom: 0; width: 100%; background: rgba(139, 69, 19, 0.9);
+        color: white; font-size: 11px; text-align: center; padding: 3px 0; font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="ui-overlay">
+      <div class="header-bar">
+        <div style="color:white; font-weight:bold; font-size:24px;">Mirasımızın Ezgileri 360</div>
+        <div class="nav-buttons">
+          <button onclick="window.location.href='Ana-sayfa.html'">Ana Sayfa 🏠</button>
+          <button onclick="window.location.href='hakkinda.html'">Hakkında</button>
+          <button onclick="window.location.href='kesfet.html'">Keşfet</button>
+        </div>
+      </div>
+
+      <div id="side-panel" class="info-panel">
+        <div class="info-content">
+          <h2 id="info-title">Klasik Kemençe</h2>
+          <p id="info-desc">Bu çalgı tıpkı bir armuda benziyor! Gövdesi ıhlamur, dut veya erik ağacından yapılır. Üç teli vardır. Tırnaklar ile çalınması en büyük özelliğidir!</p>
+        </div>
+        
+        <button class="game-redirect-btn" onclick="window.location.href='kemence_muzik_secim.html'">OYNA 🎮</button>
+
+        <div class="tutorial-box">
+          <div class="tutorial-title">💡 Yandaki estrümanı nasıl inceleriz?</div>
+          <div class="tutorial-item"><span>🖱️ <b>Döndür:</b> Sol tık / Tek parmak</span></div>
+          <div class="tutorial-item"><span>🔍 <b>Yakınlaş:</b> Tekerlek / İki parmakla büyüt-küçült</span></div>
+          <div class="tutorial-item"><span>🖐️ <b>Kaydır:</b> Sağ tık / Çift parmak </span></div>
+          <div class="tutorial-item"><span> <b> (sıfırlamak için yenileme butonuna bas)</b> </span></div>
+        </div>
+      </div>
+
+      <button id="toggleBtn" class="toggle-info-btn" onclick="togglePanel()">BİLGİLERİ GÖSTER</button>
+    </div>
+
+    <div id="scene-container">
+      <div id="preview-box" onclick="swapModels()">
+        <img id="preview-img" src="models/yay_onizleme.png" alt="Yay">
+        <div id="preview-label">YAYA GEÇ</div>
+      </div>
+
+      <div class="control-btn audio-btn" onclick="playIntro()">🔊</div>
+      <div class="control-btn reset-btn" onclick="resetCamera()">↺</div>
+
+      <audio id="kemenceAudio"><source src="sounds/klasikkemence_tanıtım.mp3" type="audio/mpeg"></audio>
+
+      <a-scene embedded vr-mode-ui="enabled: false">
+        <a-assets>
+            <a-asset-item id="kemence-model" src="models/kemence1.glb"></a-asset-item>
+            <a-asset-item id="yay-model" src="models/yay.glb"></a-asset-item>
+        </a-assets>
+
+        <a-entity id="main-model" gltf-model="#kemence-model" scale="11 11 11" position="0 1.0 -4" rotation="0 40 0"></a-entity>
+
+        <a-entity id="camera-rig" universal-controls-v1>
+          <a-entity id="camera-offset" position="0 0 3.5">
+            <a-camera look-controls="enabled: false" wasd-controls="enabled: false"></a-camera>
+          </a-entity>
+        </a-entity>
+
+        <a-sky color="#FFF"></a-sky>
+        <a-light type="ambient" intensity="1.5"></a-light>
+        <a-light type="directional" position="-1 3 2" intensity="1.2"></a-light>
+      </a-scene>
+    </div>
+
+    <script>
+      let isKemenceActive = true;
+
+      function swapModels() {
+        const mainModel = document.querySelector('#main-model');
+        const previewImg = document.querySelector('#preview-img');
+        const previewLabel = document.querySelector('#preview-label');
+        const infoTitle = document.querySelector('#info-title');
+        const infoDesc = document.querySelector('#info-desc');
+
+        resetCamera();
+
+        if (isKemenceActive) {
+          mainModel.removeAttribute('gltf-model');
+          mainModel.setAttribute('gltf-model', '#yay-model');
+          mainModel.setAttribute('scale', '3 3 3'); 
+          mainModel.setAttribute('position', '0 2.7 -4');
+          previewImg.src = "models/kemence_onizleme.png";
+          previewLabel.innerText = "KEMENÇEYE GEÇ";
+          infoTitle.innerText = "Kemençe Yayı";
+          infoDesc.innerText = "Şimşir veya erik ağacından yapılan, at kuyruğu kıllarıyla sese can veren yaydır. Kemençenin ruhunu ortaya çıkarır.";
+          isKemenceActive = false;
+        } else {
+          mainModel.removeAttribute('gltf-model');
+          mainModel.setAttribute('gltf-model', '#kemence-model');
+          mainModel.setAttribute('scale', '11 11 11');
+          mainModel.setAttribute('position', '0 1 -4');
+          previewImg.src = "models/yay_onizleme.png";
+          previewLabel.innerText = "YAYA GEÇ";
+          infoTitle.innerText = "Klasik Kemençe";
+          infoDesc.innerText = "Kemençe, tellere tırnak üstü ile basılarak çalınan, Karadeniz'in hırçın dalgalarını notaya döken eşsiz bir çalgıdır.";
+          isKemenceActive = true;
+        }
+      }
+
+      function togglePanel() {
+        const panel = document.getElementById('side-panel');
+        panel.classList.toggle('panel-open');
+        document.getElementById('toggleBtn').innerText = panel.classList.contains('panel-open') ? "BİLGİYİ GİZLE" : "BİLGİLERİ GÖSTER";
+      }
+
+      function resetCamera() {
+        const rig = document.querySelector('#camera-rig').components['universal-controls-v1'];
+        if (rig) { 
+          rig.targetYaw = 0; rig.targetPitch = 15; rig.targetZoom = 3.5; 
+          rig.targetPanX = 0; rig.targetPanY = 0; 
+        }
+      }
+
+      function playIntro() {
+        const audio = document.getElementById('kemenceAudio');
+        audio.currentTime = 0; audio.play().catch(e => console.log("Hata:", e));
+      }
+
+      AFRAME.registerComponent('universal-controls-v1', {
+        init: function () {
+          this.isOrbiting = false; this.isPanning = false;
+          this.yaw = 0; this.pitch = 15; this.zoom = 3.5; this.panX = 0; this.panY = 0;
+          this.targetYaw = 0; this.targetPitch = 15; this.targetZoom = 3.5;
+          this.targetPanX = 0; this.targetPanY = 0;
+          this.prevMouse = { x: 0, y: 0 };
+          this.fingerDist = 0; this.prevTouchMid = { x: 0, y: 0 };
+          const canvas = this.el.sceneEl.canvas;
+          window.addEventListener('contextmenu', (e) => e.preventDefault());
+          canvas.addEventListener('pointerdown', (e) => {
+            if (e.pointerType === 'mouse') {
+              if (e.button === 0) this.isOrbiting = true;
+              if (e.button === 2) this.isPanning = true;
+            }
+            this.prevMouse = { x: e.clientX, y: e.clientY };
+            canvas.setPointerCapture(e.pointerId);
+          });
+          canvas.addEventListener('pointermove', (e) => {
+            if (e.pointerType !== 'mouse' || (!this.isOrbiting && !this.isPanning)) return;
+            let dx = e.clientX - this.prevMouse.x;
+            let dy = e.clientY - this.prevMouse.y;
+            if (this.isOrbiting) { this.targetYaw -= dx * 0.3; this.targetPitch -= dy * 0.3; }
+            if (this.isPanning) { this.targetPanX -= dx * 0.0015 * this.zoom; this.targetPanY += dy * 0.0015 * this.zoom; }
+            this.targetPitch = Math.max(-85, Math.min(85, this.targetPitch));
+            this.prevMouse = { x: e.clientX, y: e.clientY };
+          });
+          canvas.addEventListener('pointerup', () => { this.isOrbiting = false; this.isPanning = false; });
+          window.addEventListener('wheel', (e) => { this.targetZoom = Math.max(1.5, Math.min(10, this.targetZoom + e.deltaY * 0.005)); });
+          canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) { this.prevMouse = { x: e.touches[0].pageX, y: e.touches[0].pageY }; }
+            else if (e.touches.length === 2) {
+              this.fingerDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+              this.prevTouchMid = { x: (e.touches[0].pageX + e.touches[1].pageX)/2, y: (e.touches[0].pageY + e.touches[1].pageY)/2 };
+            }
+          });
+          canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (e.touches.length === 1) {
+              let dx = e.touches[0].pageX - this.prevMouse.x;
+              let dy = e.touches[0].pageY - this.prevMouse.y;
+              this.targetYaw -= dx * 0.4; this.targetPitch -= dy * 0.4;
+              this.targetPitch = Math.max(-85, Math.min(85, this.targetPitch));
+              this.prevMouse = { x: e.touches[0].pageX, y: e.touches[0].pageY };
+            } else if (e.touches.length === 2) {
+              let d = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+              this.targetZoom -= (d - this.fingerDist) * 0.01;
+              this.fingerDist = d;
+              let mid = { x: (e.touches[0].pageX + e.touches[1].pageX)/2, y: (e.touches[0].pageY + e.touches[1].pageY)/2 };
+              this.targetPanX -= (mid.x - this.prevTouchMid.x) * 0.002 * this.zoom;
+              this.targetPanY += (mid.y - this.prevTouchMid.y) * 0.002 * this.zoom;
+              this.prevTouchMid = mid;
+            }
+          }, { passive: false });
+        },
+        tick: function () {
+          const d = 0.1;
+          this.yaw += (this.targetYaw - this.yaw) * d;
+          this.pitch += (this.targetPitch - this.pitch) * d;
+          this.zoom += (this.targetZoom - this.zoom) * d;
+          this.panX += (this.targetPanX - this.panX) * d;
+          this.panY += (this.targetPanY - this.panY) * d;
+          this.el.object3D.rotation.set(THREE.MathUtils.degToRad(this.pitch), THREE.MathUtils.degToRad(this.yaw), 0);
+          this.el.object3D.rotation.order = 'YXZ';
+          document.querySelector('#camera-offset').object3D.position.set(this.panX, this.panY, this.zoom);
+          this.el.object3D.position.set(0, 1.2, -4);
+        }
+      });
+    </script>
+  </body>
+</html>
